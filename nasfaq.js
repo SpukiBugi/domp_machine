@@ -120,7 +120,7 @@ const execute = () => {
       await sendReq(el);
     }
   	
-    buyInterval = setInterval(() => {
+    buyInterval = setInterval(async () => {
       for (const el of buyCoins) {
         await sendReq(el);
       }
@@ -158,7 +158,7 @@ const execute = () => {
       await sendReq(el);
     }
   	
-    sellInterval = setInterval(() => {
+    sellInterval = setInterval(async () => {
       for (const el of sellCoins) {
         await sendReq(el);
       }
