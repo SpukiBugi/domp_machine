@@ -8,9 +8,9 @@ console.log('userScr');
 
 const execute = () => {
   console.log('start');
-  let block = document.createElement("div");
+  const block = document.createElement("div");
   document.body.append(block);
-  let string = `
+  const string = `
 		<style>
 			.control-block {
 				display: flex;
@@ -115,13 +115,13 @@ const execute = () => {
     if (flags[operation]) return;
     flags[operation] = true;
     
-    let coins = inputs[operation].value.split(';');
-    let amounts = amountInputs[operation].value.split(';');
+    const coins = inputs[operation].value.split(';');
+    const amounts = amountInputs[operation].value.split(';');
     console.log(operation, coins);
     
-  	let sendReq = async (coin) => {
+  	const sendReq = async (coin) => {
     	console.log('req', coin);
-      let data = {coin: coin};
+      const data = {coin: coin};
       
       await fetch(urls[operation], {
       	method: 'POST',
