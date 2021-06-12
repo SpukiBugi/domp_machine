@@ -50,6 +50,7 @@ const execute = () => {
           buy
         </div>
         <input class="js-buy-input input-auto" type="text" id="buy" name="buy" placeholder="names separated by ;" />
+        <input class="js-buy-amount input-auto" type="text" id="amount" name="amount" placeholder="amount" />
 
         <div class="js-buy-stop btn-auto">
         stop buy
@@ -60,6 +61,7 @@ const execute = () => {
           sell
         </div>
         <input class="js-sell-input input-auto" type="text" id="sell" name="sell" placeholder="names separated by ;" />
+        <input class="js-sell-amount input-auto" type="text" id="amount" name="amount" placeholder="amount" />
 
         <div class="js-sell-stop btn-auto">
         stop sell
@@ -80,6 +82,8 @@ const execute = () => {
   let sellStart = document.querySelector('.js-sell-start');
   let buyInput = document.querySelector('.js-buy-input');
   let sellInput = document.querySelector('.js-sell-input');
+  let buyAmount = document.querySelector('.js-buy-amount');
+  let sellAmount = document.querySelector('.js-sell-amount');
   
   let buyUrl = 'https://nasfaq.biz/api/buyCoin/';
   let sellUrl = 'https://nasfaq.biz/api/sellCoin/';
@@ -93,6 +97,7 @@ const execute = () => {
     console.log('buyCl', buyInput);
     
     let buyCoins = buyInput.value.split(';');
+    let amount = buyAmount.value;
     console.log('buyCl', buyCoins);
     
   	let sendReq = async (coin) => {
@@ -121,9 +126,16 @@ const execute = () => {
     }
   	
     buyInterval = setInterval(async () => {
+      if (!amount) {
+        clearInterval(buyInterval);
+      	return;
+      }
+      
       for (const el of buyCoins) {
         await sendReq(el);
       }
+      
+      amount--;
     }, 605000)
   });
   
@@ -132,6 +144,7 @@ const execute = () => {
     sellingFlag = true;
     
     let sellCoins = sellInput.value.split(';');
+    let amount = sellAmount.value;
     console.log('sellCl', sellCoins);
     
   	let sendReq = async (coin) => {
@@ -159,9 +172,16 @@ const execute = () => {
     }
   	
     sellInterval = setInterval(async () => {
+      if (!amount) {
+        clearInterval(sellInterval);
+      	return;
+      }
+      
       for (const el of sellCoins) {
         await sendReq(el);
       }
+      
+      amount--;
     }, 605000)
   });
   
