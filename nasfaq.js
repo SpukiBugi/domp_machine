@@ -6,7 +6,6 @@
 
 console.log('userScr');
 
-
 const execute = () => {
   console.log('start');
   let block = document.createElement("div");
@@ -50,7 +49,7 @@ const execute = () => {
           buy
         </div>
         <input class="js-buy-input block-item" type="text" id="buy" name="buy" placeholder="names separated by ;" />
-        <input class="js-buy-amount block-item" type="text" id="amount" name="amount" placeholder="amount" />
+        <input class="js-buy-amount block-item" type="text" id="amount" name="amount" placeholder="amounts separated by ;" />
 
         <div class="js-buy-stop block-item btn-auto">
         stop buy
@@ -61,150 +60,107 @@ const execute = () => {
           sell
         </div>
         <input class="js-sell-input block-item" type="text" id="sell" name="sell" placeholder="names separated by ;" />
-        <input class="js-sell-amount block-item" type="text" id="amount" name="amount" placeholder="amount" />
+        <input class="js-sell-amount block-item" type="text" id="amount" name="amount" placeholder="amounts separated by ;" />
 
         <div class="js-sell-stop block-item btn-auto">
         stop sell
         </div>
       </div>
 		</div>
-
-
-
 	`;
   
   block.innerHTML = string;
   
-  let buyInterval;
-  let sellInterval
-  
-  let buyStart = document.querySelector('.js-buy-start');
-  let sellStart = document.querySelector('.js-sell-start');
-  let buyInput = document.querySelector('.js-buy-input');
-  let sellInput = document.querySelector('.js-sell-input');
-  let buyAmount = document.querySelector('.js-buy-amount');
-  let sellAmount = document.querySelector('.js-sell-amount');
-  
-  let buyUrl = 'https://nasfaq.biz/api/buyCoin/';
-  let sellUrl = 'https://nasfaq.biz/api/sellCoin/';
-  
-  let buyingFlag = false;
-  let sellingFlag = false;
-  
-  buyStart.addEventListener('click', async () => {
-    if (buyingFlag) return;
-    buyingFlag = true;
-    console.log('buyCl', buyInput);
+  const starts = {
+    buy: document.querySelector('.js-buy-start'),
+    sell: document.querySelector('.js-sell-start')
+  };
+
+  const stops = {
+    buy: document.querySelector('.js-buy-stop'),
+    sell: document.querySelector('.js-sell-stop')
+  };
+
+  const inputs = {
+    buy: document.querySelector('.js-buy-input'),
+    sell: document.querySelector('.js-sell-input')
+  };
+
+  const amountInputs = {
+    buy: document.querySelector('.js-buy-amount'),
+    sell: document.querySelector('.js-sell-amount')
+  };
+
+  const flags = {
+    buy: false,
+    sell: false,
+  };
+
+  const urls = {
+    buy: 'https://nasfaq.biz/api/buyCoin/',
+    sell: 'https://nasfaq.biz/api/sellCoin/',
+  };
+
+  const intervals = {
+    buy: null,
+    sell: null,
+  };
+
+  for (const key in starts) {
+      starts[key].addEventListener('click', () => {startHandler(key)});
+      stops[key].addEventListener('click', () => {stopHandler(key)});
+  }
+
+  async function startHandler(operation) {
+    if (flags[operation]) return;
+    flags[operation] = true;
     
-    let buyCoins = buyInput.value.split(';');
-    let amount = buyAmount.value;
-    console.log('buyCl', buyCoins);
+    let coins = inputs[operation].value.split(';');
+    let amounts = amountInputs[operation].value.split(';');
+    console.log(operation, coins);
     
   	let sendReq = async (coin) => {
-    	console.log('buy', coin);
+    	console.log('req', coin);
       let data = {coin: coin};
       
-      await fetch(buyUrl, {
+      await fetch(urls[operation], {
       	method: 'POST',
        	body: JSON.stringify(data),
        	"credentials": "include",
-       	"headers": {
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0",
-          "Accept": "*/*",
-          "Accept-Language": "ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3",
-          "Content-Type": "application/json"
-    		},
       })
       .then(response => response.json())
-      .then(data => console.log('sucB', data))
-      .catch(err => console.log('errB', err));
+      .then(data => console.log('succ' + operation, data))
+      .catch(err => console.log('err ' + operation, err));
     };
     
+    for (let i = 0; i < coins.length; i++) {
+      await sendReq(coins[i]);
+
+      amounts[i]--;
+		}
     
-    for (const el of buyCoins) {
-      await sendReq(el);
-    }
-  	
-    buyInterval = setInterval(async () => {
-      if (!amount) {
-        clearInterval(buyInterval);
+    intervals[operation] = setInterval(async () => {
+      if (!amounts.find(el => el > 0)) {
+        clearInterval(intervals[operation]);
       	return;
       }
       
-      for (const el of buyCoins) {
-        await sendReq(el);
+      for (let i = 0; i < coins.length; i++) {
+        if (amounts[i] > 0) {
+          await sendReq(el);
+          amounts[i]--;
+        }
       }
-      
-      amount--;
     }, 605000)
-  });
-  
-  sellStart.addEventListener('click', async () => {
-    if (sellingFlag) return;
-    sellingFlag = true;
-    
-    let sellCoins = sellInput.value.split(';');
-    let amount = sellAmount.value;
-    console.log('sellCl', sellCoins);
-    
-  	let sendReq = async (coin) => {
-      let data = {coin: coin};
-    	console.log('sell', coin);
-      
-      await fetch(sellUrl, {
-      	method: 'POST',
-        body: JSON.stringify(data),
-        "credentials": "include",
-        "headers": {
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0",
-          "Accept": "*/*",
-          "Accept-Language": "ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3",
-          "Content-Type": "application/json"
-    		},
-      })
-      .then(response => response.json())
-      .then(data => console.log('sucS', data))
-      .catch(err => console.log('errS', err));
-    };
-    
-    for (const el of sellCoins) {
-      await sendReq(el);
-    }
-  	
-    sellInterval = setInterval(async () => {
-      if (!amount) {
-        clearInterval(sellInterval);
-      	return;
-      }
-      
-      for (const el of sellCoins) {
-        await sendReq(el);
-      }
-      
-      amount--;
-    }, 605000)
-  });
-  
-  
-  
-  const stopBuy = document.querySelector('.js-buy-stop');  
-  const stopSell = document.querySelector('.js-sell-stop');
+  }
 
-  stopBuy.addEventListener('click', () => {
-    buyingFlag = false;
+  function stopHandler(operation) {
+    flags[operation] = false;
     
-    if (buyInterval) {
-      clearInterval(buyInterval);
+    if (intervals[operation]) {
+      clearInterval(intervals[operation]);
     }
-  });
-
-  stopSell.addEventListener('click', () => {
-    sellingFlag = false;
-    
-    if (sellInterval) {
-      clearInterval(sellInterval);
-    }
-  });
+  }
 }
 
 execute();
