@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name     Скрипт БезИмени 843191
+// @name     Скрипт Nasfaq
 // @version  1
 // @grant    none
 // ==/UserScript==
@@ -22,7 +22,13 @@ const execute = () => {
         top: 200px;
         left: 150px;
         padding: 20px;
+				overflow: hidden;
 				box-sizing: border-box;
+			}
+
+			.control-block._min {
+				width: 40px;
+				height: 40px;
 			}
 
 			.half-block {
@@ -42,8 +48,21 @@ const execute = () => {
       .block-item:not(:first-child) {
         margin-top: 16px
       }
+
+			.expander {
+				position: absolute;
+				top: 0;
+				left: 0;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 20px;
+				height: 20px;
+				font-size: 24px;
+				cursor: pointer;
+			}
 		</style>
-		<div class="control-block">
+		<div class="control-block js-control-block">
       <div class="half-block">
         <div class="js-buy-start block-item btn-auto">
           buy
@@ -66,29 +85,33 @@ const execute = () => {
         stop sell
         </div>
       </div>
+
+			<div class="js-expander expander">-</div>
 		</div>
 	`;
   
   block.innerHTML = string;
   
+  const controlBlock = block.querySelector('.js-control-block');
+  
   const starts = {
-    buy: document.querySelector('.js-buy-start'),
-    sell: document.querySelector('.js-sell-start')
+    buy: block.querySelector('.js-buy-start'),
+    sell: block.querySelector('.js-sell-start')
   };
 
   const stops = {
-    buy: document.querySelector('.js-buy-stop'),
-    sell: document.querySelector('.js-sell-stop')
+    buy: block.querySelector('.js-buy-stop'),
+    sell: block.querySelector('.js-sell-stop')
   };
 
   const inputs = {
-    buy: document.querySelector('.js-buy-input'),
-    sell: document.querySelector('.js-sell-input')
+    buy: block.querySelector('.js-buy-input'),
+    sell: block.querySelector('.js-sell-input')
   };
 
   const amountInputs = {
-    buy: document.querySelector('.js-buy-amount'),
-    sell: document.querySelector('.js-sell-amount')
+    buy: block.querySelector('.js-buy-amount'),
+    sell: block.querySelector('.js-sell-amount')
   };
 
   const flags = {
@@ -105,6 +128,8 @@ const execute = () => {
     buy: null,
     sell: null,
   };
+  
+  activateExpander();
 
   for (const key in starts) {
       starts[key].addEventListener('click', () => {startHandler(key)});
@@ -161,6 +186,25 @@ const execute = () => {
     if (intervals[operation]) {
       clearInterval(intervals[operation]);
     }
+  }
+  
+  
+  function activateExpander() {
+  	const expander = block.querySelector('.js-expander');
+    
+    const expanderClick = () => {
+    	if (expander.classList.contains('_min')) {
+      	expander.classList.remove('_min');
+      	expander.innerHTML = '-';
+        controlBlock.classList.remove('_min');
+      } else {
+      	expander.classList.add('_min');
+      	expander.innerHTML = '+';
+        controlBlock.classList.add('_min');
+      }
+    }
+    
+    expander.addEventListener('click', expanderClick);
   }
 }
 
