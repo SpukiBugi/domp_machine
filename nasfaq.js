@@ -40,30 +40,30 @@ const execute = () => {
 				box-sizing: border-box;
       }
 
-			.input-auto {
-				margin: 16px 0;
-			}
+      .block-item:not(:first-child) {
+        margin-top: 16px
+      }
 		</style>
 		<div class="control-block">
       <div class="half-block">
-        <div class="js-buy-start btn-auto">
+        <div class="js-buy-start block-item btn-auto">
           buy
         </div>
-        <input class="js-buy-input input-auto" type="text" id="buy" name="buy" placeholder="names separated by ;" />
-        <input class="js-buy-amount input-auto" type="text" id="amount" name="amount" placeholder="amount" />
+        <input class="js-buy-input block-item" type="text" id="buy" name="buy" placeholder="names separated by ;" />
+        <input class="js-buy-amount block-item" type="text" id="amount" name="amount" placeholder="amount" />
 
-        <div class="js-buy-stop btn-auto">
+        <div class="js-buy-stop block-item btn-auto">
         stop buy
         </div>
       </div>
       <div  class="half-block">
-        <div class="js-sell-start btn-auto">
+        <div class="js-sell-start block-item btn-auto">
           sell
         </div>
-        <input class="js-sell-input input-auto" type="text" id="sell" name="sell" placeholder="names separated by ;" />
-        <input class="js-sell-amount input-auto" type="text" id="amount" name="amount" placeholder="amount" />
+        <input class="js-sell-input block-item" type="text" id="sell" name="sell" placeholder="names separated by ;" />
+        <input class="js-sell-amount block-item" type="text" id="amount" name="amount" placeholder="amount" />
 
-        <div class="js-sell-stop btn-auto">
+        <div class="js-sell-stop block-item btn-auto">
         stop sell
         </div>
       </div>
