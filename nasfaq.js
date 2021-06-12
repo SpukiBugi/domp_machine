@@ -148,7 +148,7 @@ const execute = () => {
       
       for (let i = 0; i < coins.length; i++) {
         if (amounts[i] > 0) {
-          await sendReq(el);
+          await sendReq(coins[i]);
           amounts[i]--;
         }
       }
