@@ -4,10 +4,7 @@
 // @grant    none
 // ==/UserScript==
 
-console.log('userScr');
-
 const execute = () => {
-  console.log('start');
   const block = document.createElement("div");
   document.body.append(block);
   const string = `
@@ -93,81 +90,67 @@ const execute = () => {
   block.innerHTML = string;
   
   const controlBlock = block.querySelector('.js-control-block');
-  
-  const starts = {
-    buy: block.querySelector('.js-buy-start'),
-    sell: block.querySelector('.js-sell-start')
-  };
 
-  const stops = {
-    buy: block.querySelector('.js-buy-stop'),
-    sell: block.querySelector('.js-sell-stop')
-  };
+  const operations = [
+    {
+      name: 'buy',
+      startBtn: block.querySelector('.js-buy-start'),
+      stopBtn: block.querySelector('.js-buy-stop'),
+      input: block.querySelector('.js-buy-input'),
+      amountInput: block.querySelector('.js-buy-amount'),
+      active: false,
+      url: 'https://nasfaq.biz/api/buyCoin/',
+      interval: null
+    },
 
-  const inputs = {
-    buy: block.querySelector('.js-buy-input'),
-    sell: block.querySelector('.js-sell-input')
-  };
-
-  const amountInputs = {
-    buy: block.querySelector('.js-buy-amount'),
-    sell: block.querySelector('.js-sell-amount')
-  };
-
-  const flags = {
-    buy: false,
-    sell: false,
-  };
-
-  const urls = {
-    buy: 'https://nasfaq.biz/api/buyCoin/',
-    sell: 'https://nasfaq.biz/api/sellCoin/',
-  };
-
-  const intervals = {
-    buy: null,
-    sell: null,
-  };
+    {
+      name: 'sell',
+      startBtn: block.querySelector('.js-sell-start'),
+      stopBtn: block.querySelector('.js-sell-stop'),
+      input: block.querySelector('.js-sell-input'),
+      amountInput: block.querySelector('.js-sell-amount'),
+      active: false,
+      url: 'https://nasfaq.biz/api/sellCoin/',
+      interval: null
+    }
+  ];
   
   activateExpander();
 
-  for (const key in starts) {
-      starts[key].addEventListener('click', () => {startHandler(key)});
-      stops[key].addEventListener('click', () => {stopHandler(key)});
-  }
+  operations.forEach(el => {
+    el.startBtn.addEventListener('click', () => {startHandler(el)});
+    el.stopBtn.addEventListener('click', () => {stopHandler(el)});
+  });
 
   async function startHandler(operation) {
-    if (flags[operation]) return;
-    flags[operation] = true;
+    if (operation.active) return;
+    operation.active = true;
     
-    const coins = inputs[operation].value.split(';');
-    const amounts = amountInputs[operation].value.split(';');
-    console.log(operation, coins);
+    const coins = operation.input.value.split(';');
+    const amounts = operation.amountInput.value.split(';');
     
   	const sendReq = async (coin) => {
-    	console.log('req', coin);
       const data = {coin: coin};
       
-      await fetch(urls[operation], {
+      await fetch(operation.url, {
       	method: 'POST',
        	body: JSON.stringify(data),
        	"credentials": "include",
       })
       .then(response => response.json())
-      .then(data => console.log('succ' + operation, data))
-      .catch(err => console.log('err ' + operation, err));
+      .then(data => console.log('succ' + operation.name, data))
+      .catch(err => console.log('err ' + operation.name, err));
     };
     
     for (let i = 0; i < coins.length; i++) {
       await sendReq(coins[i]);
-
       amounts[i]--;
 		}
     
-    intervals[operation] = setInterval(async () => {
+    operation.interval = setInterval(async () => {
       if (!amounts.find(el => el > 0)) {
-        clearInterval(intervals[operation]);
-        flags[operation] = false;
+        clearInterval(operation.interval);
+        operation.active = false;
       	return;
       }
       
@@ -181,10 +164,10 @@ const execute = () => {
   }
 
   function stopHandler(operation) {
-    flags[operation] = false;
+    operation.active = false;
     
-    if (intervals[operation]) {
-      clearInterval(intervals[operation]);
+    if (operation.interval) {
+      clearInterval(operation.interval);
     }
   }
   
