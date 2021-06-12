@@ -142,6 +142,7 @@ const execute = () => {
     intervals[operation] = setInterval(async () => {
       if (!amounts.find(el => el > 0)) {
         clearInterval(intervals[operation]);
+        flags[operation] = false;
       	return;
       }
       
