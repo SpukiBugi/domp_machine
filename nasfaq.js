@@ -59,7 +59,7 @@ const execute = () => {
 				cursor: pointer;
 			}
 		</style>
-		<div class="control-block js-control-block">
+		<div class="control-block _min js-control-block">
       <div class="half-block">
         <div class="js-buy-start block-item btn-auto">
           buy
@@ -83,7 +83,7 @@ const execute = () => {
         </div>
       </div>
 
-			<div class="js-expander expander">-</div>
+			<div class="js-expander expander _min">+</div>
 		</div>
 	`;
   
@@ -128,6 +128,7 @@ const execute = () => {
     
     const coins = operation.input.value.split(';');
     const amounts = operation.amountInput.value.split(';');
+    let retries = 7;
     
   	const sendReq = async (coin) => {
       const data = {coin: coin};
@@ -138,8 +139,18 @@ const execute = () => {
        	"credentials": "include",
       })
       .then(response => response.json())
-      .then(data => console.log('succ' + operation.name, data))
-      .catch(err => console.log('err ' + operation.name, err));
+      .then(data => {
+        console.log('succ' + operation.name, data)
+        retries = 7;
+      })
+      .catch(async err => {
+        console.log('err ' + operation.name, err);
+        
+        if (retries) {
+          retries--;
+        	await sendReq(coin);
+        }
+      })
     };
     
     for (let i = 0; i < coins.length; i++) {
