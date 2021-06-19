@@ -21,11 +21,7 @@ const execute = () => {
         padding: 20px;
 				overflow: hidden;
 				box-sizing: border-box;
-			}
-
-			.control-block._min {
-				width: 40px;
-				height: 40px;
+				resize: both;
 			}
 
 			.half-block {
@@ -45,21 +41,8 @@ const execute = () => {
       .block-item:not(:first-child) {
         margin-top: 16px
       }
-
-			.expander {
-				position: absolute;
-				top: 0;
-				left: 0;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				width: 20px;
-				height: 20px;
-				font-size: 24px;
-				cursor: pointer;
-			}
 		</style>
-		<div class="control-block _min js-control-block">
+		<div class="control-block js-control-block">
       <div class="half-block">
         <div class="js-buy-start block-item btn-auto">
           buy
@@ -82,8 +65,6 @@ const execute = () => {
         stop sell
         </div>
       </div>
-
-			<div class="js-expander expander _min">+</div>
 		</div>
 	`;
   
@@ -114,8 +95,6 @@ const execute = () => {
       interval: null
     }
   ];
-  
-  activateExpander();
 
   operations.forEach(el => {
     el.startBtn.addEventListener('click', () => {startHandler(el)});
@@ -180,25 +159,6 @@ const execute = () => {
     if (operation.interval) {
       clearInterval(operation.interval);
     }
-  }
-  
-  
-  function activateExpander() {
-  	const expander = block.querySelector('.js-expander');
-    
-    const expanderClick = () => {
-    	if (expander.classList.contains('_min')) {
-      	expander.classList.remove('_min');
-      	expander.innerHTML = '-';
-        controlBlock.classList.remove('_min');
-      } else {
-      	expander.classList.add('_min');
-      	expander.innerHTML = '+';
-        controlBlock.classList.add('_min');
-      }
-    }
-    
-    expander.addEventListener('click', expanderClick);
   }
 }
 
